@@ -17,6 +17,7 @@ class MRCONSO (models.Model):
 	LAT 	= models.CharField(max_length=3)
 	ISPREF  = models.CharField(max_length=1)
 	SAB 	= models.CharField(max_length=20)
+	AUI		= models.CharField(max_length=9, primary_key=True)
 	class Meta:
 		db_table = 'MRCONSO'
 

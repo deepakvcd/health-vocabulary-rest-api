@@ -112,22 +112,46 @@ class ConceptResource:
 
         cursor = connection.cursor()
 
-        query = """SELECT CUI,
-                      GROUP_CONCAT(DISTINCT STR SEPARATOR '|') as terms,
-                      GROUP_CONCAT(DISTINCT SAB SEPARATOR '|') as sabs,
-                      GROUP_CONCAT(ISPREF SEPARATOR '|') as is_prefs
-                      FROM MRCONSO WHERE CUI=%s AND LAT='ENG' """
+        # query = """SELECT CUI,
+        #               GROUP_CONCAT(DISTINCT STR SEPARATOR '|') as terms,
+        #               GROUP_CONCAT(DISTINCT SAB SEPARATOR '|') as sabs,
+        #               GROUP_CONCAT(ISPREF SEPARATOR '|') as is_prefs
+        #               FROM MRCONSO WHERE CUI=%s AND LAT='ENG' """
+        query = """
+            SELECT CUI,STR,SAB,SCUI,SDUI,ISPREF
+
+                      FROM MRCONSO WHERE CUI=%s AND LAT='ENG'
+        """
 
         cursor.execute(query, [cui])
 
-        row = cursor.fetchone()
-        if row:
-            return {
-                'cui': row[0],
-                'terms': row[1].split("|"),
-                'sabs': row[2].split("|"),
+        #rows = cursor.fetchall()
+        rterms = []
+
+        rows = cursor.fetchall()
+
+
+        for row in rows:
+            rterms.append({
+                'str' : row[1],
+                'term': row[2],
+                'code': row[3] if row[3] else row[4],
+                'is_pref' : row[5]
                 # TODO get the pref term
-            }
+            })
+        resp = {
+            'cui' : rows[0][0],
+            'terms' : rterms
+        }
+        return resp
+
+        # if row:
+        #     return {
+        #         'cui': row[0],
+        #         'terms': row[1].split("|"),
+        #         'sabs': row[2].split("|"),
+        #         # TODO get the pref term
+        #     }
 
         return None
 

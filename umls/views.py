@@ -104,7 +104,7 @@ def concept_resource_view(request, cui):
     if 'callback' in request.GET:
         response = request.GET["callback"]+"("+response+")"
 
-    return HttpResponse(response)
+    return HttpResponse(response, content_type="application/json")
 
 
 def concept_term_resource_view(request):
@@ -144,7 +144,7 @@ def concept_term_resource_view(request):
     if 'callback' in request.GET:
         response = request.GET["callback"]+"("+response+")"
 
-    return HttpResponse(response)
+    return HttpResponse(response, content_type="application/json")
 
 
 def concept_child_resource_view(request, cui):
