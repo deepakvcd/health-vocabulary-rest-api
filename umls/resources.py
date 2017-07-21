@@ -117,30 +117,31 @@ class ConceptResource:
         #               GROUP_CONCAT(DISTINCT SAB SEPARATOR '|') as sabs,
         #               GROUP_CONCAT(ISPREF SEPARATOR '|') as is_prefs
         #               FROM MRCONSO WHERE CUI=%s AND LAT='ENG' """
-        query = """
-            SELECT CUI,STR,SAB,SCUI,SDUI,ISPREF
-
-                      FROM MRCONSO WHERE CUI=%s AND LAT='ENG'
-        """
-
-        cursor.execute(query, [cui])
+        # query = """
+        #     SELECT CUI,STR,SAB,SCUI,SDUI,ISPREF
+        #
+        #               FROM MRCONSO WHERE CUI=%s AND LAT='ENG'
+        # """
+        #
+        # cursor.execute(query, [cui])
 
         #rows = cursor.fetchall()
         rterms = []
 
-        rows = cursor.fetchall()
+        rows = MRCONSO.objects.filter(CUI__in=cui.split(","))
 
 
         for row in rows:
             rterms.append({
-                'str' : row[1],
-                'term': row[2],
-                'code': row[3] if row[3] else row[4],
-                'is_pref' : row[5]
+                'str' : row.STR,
+                'cui': row.CUI,
+                'code': row.SCUI if row.SCUI else row.SDUI,
+                'is_pref' : row.ISPREF,
+                "source" : row.SAB
                 # TODO get the pref term
             })
         resp = {
-            'cui' : rows[0][0],
+
             'terms' : rterms
         }
         return resp
@@ -153,7 +154,7 @@ class ConceptResource:
         #         # TODO get the pref term
         #     }
 
-        return None
+
 
     def _get_synonyms(self, cui, sab):
         """ Get all synonyms of a cui from a SAB """
@@ -176,47 +177,68 @@ class ConceptListResource:
 
     def _get(self, str, sabs, tty=False, partial=False, tui=False):
 
-        cursor = connection.cursor()
-
-        query_base = """SELECT MRCONSO.CUI,
-                      GROUP_CONCAT(DISTINCT STR SEPARATOR '|') as terms,
-                      GROUP_CONCAT(DISTINCT SAB SEPARATOR '|') as sabs,
-                      GROUP_CONCAT(ISPREF SEPARATOR '|') as is_prefs
-                      FROM """
-        query = query_base
-        
-        if tui:
-            query += " MRCONSO,MRSTY WHERE MRCONSO.CUI=MRSTY.CUI AND " 
-            query += " MRSTY.tui = %(tui)s AND"
-        else:
-            query += " MRCONSO WHERE "
-        
-        if sabs:
-            query += " SAB IN (%(sabs)s) AND "
-
-        if tty:
-            query += " TTY IN (%(tty)s) AND "
-
-        if partial:
-            query += " CONVERT(STR using latin1) LIKE %(str)s "
-        else:
-            query += " CONVERT(STR using latin1) = %(str)s "
-
-        query += " GROUP BY CUI"  # since we need "Concept" objects
-
-        cursor.execute(query, {"sabs": sabs,
-                               "str": str,
-                               "tty":tty,
-                               "tui": tui})
+        # cursor = connection.cursor()
+        #
+        # query_base = """SELECT MRCONSO.CUI,
+        #               GROUP_CONCAT(DISTINCT STR SEPARATOR '|') as terms,
+        #               GROUP_CONCAT(DISTINCT SAB SEPARATOR '|') as sabs,
+        #               GROUP_CONCAT(ISPREF SEPARATOR '|') as is_prefs
+        #               FROM """
+        #
+        # query_base = """SELECT CUI,STR,SAB,SCUI,SDUI,ISPREF FROM """
+        #
+        #
+        #
+        # query = query_base
+        #
+        # if tui:
+        #     query += " MRCONSO,MRSTY WHERE MRCONSO.CUI=MRSTY.CUI AND "
+        #     query += " MRSTY.tui = %(tui)s AND"
+        # else:
+        #     query += " MRCONSO WHERE "
+        #
+        # if sabs:
+        #     query += " SAB IN (%(sabs)s) AND "
+        #
+        # if tty:
+        #     query += " TTY IN (%(tty)s) AND "
+        #
+        # if partial:
+        #     query += " CONVERT(STR using latin1) LIKE %(str)s "
+        # else:
+        #     query += " CUI = %(str)s "
+        #
+        # #query += " GROUP BY CUI"  # since we need "Concept" objects
+        #
+        # cursor.execute(query, {"sabs": sabs,
+        #                        "str": str,
+        #                        "tty":tty,
+        #                        "tui": tui})
         rterms = []
 
-        for row in cursor.fetchall():
+        rows = MRCONSO.objects.filter(CUI__in=str, ISPREF='Y')
+
+
+        for row in rows:
             rterms.append({
-                'cui': row[0],
-                'terms': row[1].split("|"),
-                'sabs': row[2].split("|"),
+                'str' : row.STR,
+                'cui': row.CUI,
+                'code': row.SCUI if row.SCUI else row.SDUI,
+                'is_pref' : row.ISPREF,
+                "source" : row.SAB
                 # TODO get the pref term
             })
+
+        # for row in cursor.fetchall():
+        #     rterms.append({
+        #         'cui' : row[0],
+        #         'str' : row[1],
+        #         'source': row[2],
+        #         'code': row[3] if row[3] else row[4],
+        #         'is_pref' : row[5]
+        #
+        #         # TODO get the pref term
+        #     })
 
         return rterms
 

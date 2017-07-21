@@ -300,8 +300,8 @@ def concepts_bulk_resource_view(request):
             partial = True
     
     rterms = []
-    for term in terms:
-            rterms.extend(ConceptListResource()._get(term,sab,partial))
+    #for term in terms:
+    rterms = ConceptListResource()._get(terms,sab,partial)
 
     # Handle AJAX Requests
     response = json.dumps(rterms, sort_keys=True)

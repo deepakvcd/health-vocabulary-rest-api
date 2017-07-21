@@ -18,6 +18,8 @@ class MRCONSO (models.Model):
 	ISPREF  = models.CharField(max_length=1)
 	SAB 	= models.CharField(max_length=20)
 	AUI		= models.CharField(max_length=9, primary_key=True)
+	SCUI 	= models.CharField(max_length=100)
+	SDUI = models.CharField(max_length=100)
 	class Meta:
 		db_table = 'MRCONSO'
 
