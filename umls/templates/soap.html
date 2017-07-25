@@ -18,7 +18,7 @@
                 $("#error-message").hide()
             }, 10000)
         };
-        var setup = function() {
+        var setup = function(response) {
             for (var category in response) {
                 if (response.hasOwnProperty(category)) {
                     var category_el = $("<div>",{"id":category, "class": "col-md-6 category"});
