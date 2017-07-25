@@ -5,8 +5,9 @@ from umls.resources import RelResource
 from umls.resources import MapResource
 from umls.resources import ConceptResource
 from umls.resources import ConceptListResource
-
+import soap
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 
 def code_resource_view(request, vocab, code_val):
@@ -338,3 +339,10 @@ def concepts_bulk_par_resource_view(request, cui_list):
         response = request.GET["callback"]+"("+response+")"
 
     return HttpResponse(response)
+
+@csrf_exempt
+def soap_request(request):
+    patient = json.loads(request.body)["patient"]
+    doctor = json.loads(request.body)["doctor"]
+    response = soap.getMetamapResponse(patient, doctor)
+    return HttpResponse(json.dumps(response), content_type="application/json")

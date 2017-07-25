@@ -38,6 +38,9 @@ urlpatterns = patterns('',
                        url(r'^concepts$',
                            'umls.views.concept_term_resource_view'),
 
+                        url(r'^soap$',
+                           'umls.views.soap_request'),
+
                        url(r'^concepts_bulk$',
                            'umls.views.concepts_bulk_resource_view'),
 
@@ -54,4 +57,8 @@ urlpatterns = patterns('',
 
                        url(r'^demo',
                            TemplateView.as_view(template_name="demo.html")),
+
+                       url(r'^soap_demo',
+                           TemplateView.as_view(template_name="soap.html")),
+
                        )

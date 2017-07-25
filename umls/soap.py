@@ -28,7 +28,7 @@ def getSourceIds(json_resp):
     tupleresp = requests.get(health_url, {"terms" : ",".join(cuis_tuple)})
     #print(tupleresp.json())
     return tupleresp.json()
-def getMetamapResponse():
+def getMetamapResponse(patient_conv, doc_conv):
 
     umlsUrl = "http://ec2-34-229-177-121.compute-1.amazonaws.com/concepts/"
     symptom_params = {"sources" : ["SNOMEDCT_US","ICD10CM"], "sems":["fndg", "sosy","phsf", "dsyn", "tmco","blor", "bpoc", "bdsu", "qlco", "qnco", "anst", "phsu", "clnd", "antb", "bhvr"
@@ -37,8 +37,9 @@ def getMetamapResponse():
 
     assessment_params ={"sources":["ICD10CM"],"sems": ["dsyn", "tmco", "virs", "vita"]}
     plan_params = {"sources" : ["SNOMEDCT_US","RXNORM"],"sems": ["clnd", "phsu", "antb", "lbpr", "lbtr", "diap", "topp"]}
-    patient_conv = raw_input()
-    doc_conv = raw_input()
+
+    # patient_conv = raw_input()
+    # doc_conv = raw_input()
 
     patient_symp_json = callmetamap(patient_conv, symptom_params)
     soap_resp = {"symptoms":getSourceIds(patient_symp_json)}
@@ -49,9 +50,10 @@ def getMetamapResponse():
 
     doc_plan_json = callmetamap(doc_conv, plan_params)
     soap_resp["plan"] = getSourceIds(doc_plan_json)
-
     print(json.dumps(soap_resp))
+    return soap_resp
+
     #print(json.dumps(doc_resp.json()))
-if __name__ == '__main__':
-    while True:
-        getMetamapResponse()
+# if __name__ == '__main__':
+#     while True:
+#         getMetamapResponse()
