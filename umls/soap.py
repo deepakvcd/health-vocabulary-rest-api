@@ -10,7 +10,7 @@ def callmetamap(conversation, params):
     return jsoon_resp
 
 def getSourceIds(json_resp):
-    health_url = "http://ec2-34-229-177-121.compute-1.amazonaws.com/concepts_bulk"
+    health_url = "http://localhost:8000/concepts_bulk"
     soap_resp = []
     cuis = []
     print("metamap resp")

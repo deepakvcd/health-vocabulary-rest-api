@@ -214,20 +214,22 @@ class ConceptListResource:
         #                        "str": str,
         #                        "tty":tty,
         #                        "tui": tui})
-        rterms = []
+        rterms = {}
 
         rows = MRCONSO.objects.filter(CUI__in=str, ISPREF='Y')
 
 
         for row in rows:
-            rterms.append({
-                'str' : row.STR,
-                'cui': row.CUI,
+            temp = {
+                'str': row.STR,
                 'code': row.SCUI if row.SCUI else row.SDUI,
-                'is_pref' : row.ISPREF,
-                "source" : row.SAB
-                # TODO get the pref term
-            })
+                'is_pref': row.ISPREF,
+                "source": row.SAB
+            }
+            if row.CUI in rterms:
+                rterms[row.CUI].append(temp)
+            else:
+                rterms[row.CUI] = [temp]
 
         # for row in cursor.fetchall():
         #     rterms.append({
